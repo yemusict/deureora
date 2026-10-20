@@ -580,8 +580,8 @@ function ensureKeys(){
   // 처음 보는 효과음(새로 생긴 기본 효과음 포함)에는 비어 있는 숫자 키를 차례로 붙여 줌
   const OLD=['correct','wrong','sad','clap','drum','magic','whistle','alert'];
   // 처음 쓰는 사람의 기본 단축키
-  const DEFAULT_KEYS={correct:'1',wrong:'2',sad:'3',applause:'4',drum:'5',magic:'6',whistle:'7',alert:'8',bigcheer:'9'};
-  if(!S.fxKeys){ S.fxKeys={...DEFAULT_KEYS}; S.fxKnown=Object.keys(FX); S.keyMig=2; }
+  const DEFAULT_KEYS={correct:'1',wrong:'2',sad:'3',applause:'4',drum:'5',magic:'6',whistle:'7',alert:'8',bigcheer:'9',tension:'0',punch:'-',thud:'=',tada:'['};
+  if(!S.fxKeys){ S.fxKeys={...DEFAULT_KEYS}; S.fxKnown=Object.keys(FX); S.keyMig=3; }
   if(!S.fxKnown) S.fxKnown=[...OLD,...S.customFx.map(c=>c.id)];
   let ch=false;
   // 이미 쓰던 사람: '박수'를 4번으로 옮기고 0번 단축키는 없앰 (한 번만)
@@ -589,6 +589,12 @@ function ensureKeys(){
     Object.keys(S.fxKeys).forEach(id=>{ if(S.fxKeys[id]==='4'||S.fxKeys[id]==='0') delete S.fxKeys[id]; });
     S.fxKeys.applause='4'; if(!S.fxKnown.includes('applause')) S.fxKnown.push('applause');
     S.keyMig=2; ch=true;
+  }
+  // 이미 쓰던 사람: 긴장감 0, 퍽 -, 쿵 =, 짜잔 [ 단축키를 붙여 줌 (한 번만)
+  if(S.keyMig<3){
+    const add={tension:'0',punch:'-',thud:'=',tada:'['};
+    Object.entries(add).forEach(([id,key])=>{ Object.keys(S.fxKeys).forEach(x=>{ if(x!==id&&S.fxKeys[x]===key) delete S.fxKeys[x]; }); S.fxKeys[id]=key; });
+    S.keyMig=3; ch=true;
   }
   const ids=new Set(allFx().map(f=>f.k)); Object.keys(S.fxKeys).forEach(k=>{ if(!ids.has(k)){ delete S.fxKeys[k]; ch=true; } });
   allFx().forEach(f=>{ if(!S.fxKnown.includes(f.k)){ S.fxKnown.push(f.k); const k=freeKey(); if(k&&!S.fxKeys[f.k]) S.fxKeys[f.k]=k; ch=true; } });
