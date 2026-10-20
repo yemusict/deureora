@@ -207,7 +207,7 @@ textarea#input:focus{border-color:var(--main);background:#fff}
         <button data-g="female" class="on">👩 여자</button>
         <button data-g="male" class="male">👨 남자</button>
       </div>
-      <button class="play" id="btnPlay">▶ 재생</button>
+      <button class="play" id="btnPlay" title="입력한 문구 재생 · 입력창이 비어 있으면 방금 읽은 문구를 다시 재생">▶ 재생</button>
       <button class="stop" id="btnStop" title="정지 (Esc)">■</button>
       <div class="knobs">
         <div class="knob-wrap"><div class="knob" id="knobVol" tabindex="0" role="slider" aria-label="음성 크기" data-key="vol" data-min="0" data-max="1" data-step="0.05" data-def="1"></div><div class="kl">크기<b id="kvVol"></b></div></div>
@@ -734,7 +734,13 @@ function stopAll(){ playToken++; if(synth) synth.cancel(); setSpeaking(false); s
 
 /* ================= 입력/문구 ================= */
 const input=$('input');
-function submit(){ const t=input.value.trim(); if(!t) return; speak(t); input.value=''; }
+// 입력창에 문구가 있으면 그 문구를, 비어 있으면 마지막으로 읽은 문구를 다시 읽음
+function submit(){
+  const t=input.value.trim();
+  if(t){ speak(t); input.value=''; return; }
+  if(lastText){ speak(lastText); return; }
+  toast('먼저 읽어 줄 문구를 입력해 주세요'); input.focus();
+}
 $('btnPlay').onclick=submit;
 $('btnStop').onclick=()=>{ stopAll(); stopClips(); };
 input.addEventListener('keydown',e=>{ if(e.key==='Enter' && !e.shiftKey && !e.isComposing){ e.preventDefault(); submit(); } });
