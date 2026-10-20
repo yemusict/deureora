@@ -456,13 +456,13 @@ const FX = {
       lp.type='lowpass'; lp.Q.value=6; lp.frequency.setValueAtTime(300,t); lp.frequency.linearRampToValueAtTime(1500,t+.15); lp.frequency.linearRampToValueAtTime(500,t+d);
       g.gain.setValueAtTime(0,t); g.gain.linearRampToValueAtTime(.3,t+.04); g.gain.setValueAtTime(.3,t+d-.08); g.gain.linearRampToValueAtTime(0,t+d);
       o.connect(lp).connect(g).connect(FXG); o.start(t); o.stop(t+d+.02); t+=d+.03; }); }},
+  applause:{name:'박수',emo:'👏',src:'applause'},
   drum:{name:'두구두구',emo:'🥁',src:'drum1'},
   magic:{name:'뾰로롱',emo:'✨',dur:1.4,play(){ const t=ac().currentTime+.05; [1047,1319,1568,2093,1568,2093,2637,3136].forEach((f,i)=>bell(f,t+i*.07,.7,.16)); }},
   whistle:{name:'호루라기',emo:'📣',dur:1,play(){ const c=ac(), t=c.currentTime+.05, o=tone(2600,t,.85,'sine',.2), l=c.createOscillator(), lg=c.createGain();
     l.frequency.value=28; lg.gain.value=120; l.connect(lg).connect(o.frequency); l.start(t); l.stop(t+.9); burst(t,.8,2600,2,.06); }},
   alert:{name:'띵동 (알림)',emo:'🛎️',dur:1.2,play(){ const t=ac().currentTime+.05; bell(880,t,1); bell(698.5,t+.32,1.2); }},
   bigcheer:{name:'환호',emo:'🎉',src:'bigcheer'},
-  applause:{name:'박수',emo:'👏',src:'applause'},
   tension:{name:'긴장감',emo:'😰',src:'tension'},
   punch:{name:'퍽',emo:'👊',src:'punch'},
   thud:{name:'쿵',emo:'💥',src:'thud'},
@@ -579,14 +579,22 @@ function keyLabel(k){ if(!k) return ''; if(k.length===1) return k.toUpperCase();
 function ensureKeys(){
   // 처음 보는 효과음(새로 생긴 기본 효과음 포함)에는 비어 있는 숫자 키를 차례로 붙여 줌
   const OLD=['correct','wrong','sad','clap','drum','magic','whistle','alert'];
-  if(!S.fxKeys){ S.fxKeys={}; S.fxKnown=[]; }
+  // 처음 쓰는 사람의 기본 단축키
+  const DEFAULT_KEYS={correct:'1',wrong:'2',sad:'3',applause:'4',drum:'5',magic:'6',whistle:'7',alert:'8',bigcheer:'9'};
+  if(!S.fxKeys){ S.fxKeys={...DEFAULT_KEYS}; S.fxKnown=Object.keys(FX); S.keyMig=2; }
   if(!S.fxKnown) S.fxKnown=[...OLD,...S.customFx.map(c=>c.id)];
   let ch=false;
+  // 이미 쓰던 사람: '박수'를 4번으로 옮기고 0번 단축키는 없앰 (한 번만)
+  if((S.keyMig||0)<2){
+    Object.keys(S.fxKeys).forEach(id=>{ if(S.fxKeys[id]==='4'||S.fxKeys[id]==='0') delete S.fxKeys[id]; });
+    S.fxKeys.applause='4'; if(!S.fxKnown.includes('applause')) S.fxKnown.push('applause');
+    S.keyMig=2; ch=true;
+  }
   const ids=new Set(allFx().map(f=>f.k)); Object.keys(S.fxKeys).forEach(k=>{ if(!ids.has(k)){ delete S.fxKeys[k]; ch=true; } });
   allFx().forEach(f=>{ if(!S.fxKnown.includes(f.k)){ S.fxKnown.push(f.k); const k=freeKey(); if(k&&!S.fxKeys[f.k]) S.fxKeys[f.k]=k; ch=true; } });
   if(ch) store.save();
 }
-function freeKey(){ const used=new Set(Object.values(S.fxKeys)); return ['1','2','3','4','5','6','7','8','9','0'].find(d=>!used.has(d))||''; }
+function freeKey(){ const used=new Set(Object.values(S.fxKeys)); return ['1','2','3','4','5','6','7','8','9'].find(d=>!used.has(d))||''; }
 function fxByKey(key){ const k=Object.keys(S.fxKeys).find(id=>S.fxKeys[id]===key); return k&&allFx().some(f=>f.k===k)?k:null; }
 
 function renderFx(){
