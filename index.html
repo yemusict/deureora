@@ -445,7 +445,7 @@ function boom(t,vol,f0=110,dur=.35){
   burst(t,.04,f0*12,1,vol*.35); burst(t,.08,f0*2.5,1.2,vol*.5,'lowpass');
 }
 const FX = {
-  correct:{name:'정답 딩동댕',emo:'⭕',dur:.8,play(){ const t=ac().currentTime+.05;
+  correct:{name:'딩동댕',emo:'⭕',dur:.8,play(){ const t=ac().currentTime+.05;
     [523.3,659.3,784,1046.5].forEach((f,i)=>xylo(f,t+i*.12,.45,i==3?.45:.3)); }},   // 도 미 솔 도!
   wrong:{name:'땡!',emo:'❌',dur:.4,play(){ const t=ac().currentTime+.05;
     xylo(659.3,t,.6,.35); }},                                                         // 미!
@@ -461,7 +461,7 @@ const FX = {
   magic:{name:'뾰로롱',emo:'✨',dur:1.4,play(){ const t=ac().currentTime+.05; [1047,1319,1568,2093,1568,2093,2637,3136].forEach((f,i)=>bell(f,t+i*.07,.7,.16)); }},
   whistle:{name:'호루라기',emo:'📣',dur:1,play(){ const c=ac(), t=c.currentTime+.05, o=tone(2600,t,.85,'sine',.2), l=c.createOscillator(), lg=c.createGain();
     l.frequency.value=28; lg.gain.value=120; l.connect(lg).connect(o.frequency); l.start(t); l.stop(t+.9); burst(t,.8,2600,2,.06); }},
-  alert:{name:'띵동 (알림)',emo:'🛎️',dur:1.2,play(){ const t=ac().currentTime+.05; bell(880,t,1); bell(698.5,t+.32,1.2); }},
+  alert:{name:'띵동',emo:'🛎️',dur:1.2,play(){ const t=ac().currentTime+.05; bell(880,t,1); bell(698.5,t+.32,1.2); }},
   bigcheer:{name:'환호',emo:'🎉',src:'bigcheer'},
   tension:{name:'긴장감',emo:'😰',src:'tension'},
   punch:{name:'퍽',emo:'👊',src:'punch'},
