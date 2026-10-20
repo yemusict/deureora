@@ -317,7 +317,7 @@ const DEFAULTS = {
   gender:'female', rate:0.95, pitch:1, vol:1, repeat:1, pre:false,
   font:110, color:'#1d2433', hi:true, showHist:true, fxVol:1, customFx:[], fxFile:{},
   voices:{koF:'',koM:'',enF:'',enM:''}, pin:'',
-  fxOn:{correct:true,wrong:true,sad:true,clap:true,drum:true,magic:true,whistle:true,alert:true},
+  fxOn:{correct:true,wrong:true,sad:true,drum:true,magic:true,whistle:true,alert:true},
   phrases:['모두 주목해 주세요.','Please be quiet.','활동지를 꺼내 주세요.','5분 남았습니다.','Good job, everyone!','잘했어요! 박수!'],
   history:[]
 };
@@ -456,21 +456,6 @@ const FX = {
       lp.type='lowpass'; lp.Q.value=6; lp.frequency.setValueAtTime(300,t); lp.frequency.linearRampToValueAtTime(1500,t+.15); lp.frequency.linearRampToValueAtTime(500,t+d);
       g.gain.setValueAtTime(0,t); g.gain.linearRampToValueAtTime(.3,t+.04); g.gain.setValueAtTime(.3,t+d-.08); g.gain.linearRampToValueAtTime(0,t+d);
       o.connect(lp).connect(g).connect(FXG); o.start(t); o.stop(t+d+.02); t+=d+.03; }); }},
-  clap:{name:'박수 소리',emo:'👏',dur:4.6,play(){ const c=ac(), t0=c.currentTime+.05;
-    // 공연이 끝난 뒤 관객 박수: 몇 명이 먼저 치기 시작 → 금세 모두 함께 → 한 명씩 멈추며 잦아듦
-    clapBank(); const N=48;
-    for(let p=0;p<N;p++){
-      const who=p%16, pan=Math.random()*1.8-.9, dist=.45+Math.random()*.55;          // 앞줄은 크게, 뒷줄은 작게
-      const period=1/(4.3+Math.random()*2.4);                                         // 사람마다 초당 4~7번
-      let t=t0+(p<6?Math.random()*.15:.15+Math.random()*.45);
-      const stop=t0+2.6+Math.random()*1.7;
-      while(t<stop){
-        const fadeIn=Math.min(1,(t-t0)/.5), fadeOut=Math.min(1,(stop-t)/.6);
-        clapHit(t,.16*dist*(.75+Math.random()*.5)*fadeIn*(.4+.6*fadeOut),pan,who);
-        t+=period*(.9+Math.random()*.2);
-      }
-    }
-  }},
   drum:{name:'두구두구',emo:'🥁',src:'drum1'},
   magic:{name:'뾰로롱',emo:'✨',dur:1.4,play(){ const t=ac().currentTime+.05; [1047,1319,1568,2093,1568,2093,2637,3136].forEach((f,i)=>bell(f,t+i*.07,.7,.16)); }},
   whistle:{name:'호루라기',emo:'📣',dur:1,play(){ const c=ac(), t=c.currentTime+.05, o=tone(2600,t,.85,'sine',.2), l=c.createOscillator(), lg=c.createGain();
